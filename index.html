@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover" />
+    <meta name="theme-color" content="#121b28" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Pickaxe" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="description" content="Falling Pickaxe — Telegram Mini App / browser game" />
+    <title>Falling Pickaxe</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="./assets/icons/icon-512.png" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="game" aria-label="Falling Pickaxe">
+      <canvas id="game" width="720" height="1280" aria-label="Игровое поле"></canvas>
+      <header class="brand" aria-label="PICKAXE INFERNO"></header>
+      <div class="theme-rail" aria-label="Оформление">
+        <button id="railOpenBtn" class="game-chip rail-open" type="button" aria-label="Оформление" aria-expanded="false">
+          <i class="chip-label">STYLE</i><span class="chip-value">▾</span>
+        </button>
+        <div id="themeBar" class="theme-bar">
+          <button id="uiToggleBtn" class="game-chip rail-toggle" type="button" aria-label="Скрыть кнопки оформления" title="Hide / Show">
+            <i class="chip-label">UI</i>
+            <span class="chip-value">HIDE</span>
+          </button>
+          <button id="themeBtn" class="game-chip" type="button" aria-label="Смена мира">
+            <i class="chip-label">WORLD</i>
+            <span class="chip-value">Inferno</span>
+          </button>
+          <button id="blockTexBtn" class="game-chip" type="button" aria-label="Смена текстур блоков">
+            <i class="chip-label">BLOCKS</i>
+            <span class="chip-value">THEMED</span>
+          </button>
+          <button id="shaderBtn" class="game-chip" type="button" aria-label="Шейдеры">
+            <i class="chip-label">SHADER</i>
+            <span class="chip-value">ON</span>
+          </button>
+          <button id="zannBtn" class="game-chip game-chip-zann" type="button" aria-label="Zann style">
+            <i class="chip-label">ZANN</i>
+            <span class="chip-value">OFF</span>
+          </button>
+          <button id="pickCountBtn" class="game-chip pick-chip" type="button" aria-label="Количество кирок">
+            <i class="chip-label">PICKS</i>
+            <span class="chip-value" id="pickCountValue">×1</span>
+          </button>
+          <div id="variantWrap" class="variant-wrap hidden">
+            <select id="variantSelect" aria-label="Вариант фона"></select>
+          </div>
+          <select id="themeSelect" class="hidden-select" aria-label="Мир" hidden></select>
+        </div>
+      </div>
+      <section class="controls hud-ref" aria-label="Игровое управление">
+        <!-- Left cluster: turbo + settings -->
+        <button id="turboBtn" class="hud-round hud-turbo" type="button" aria-label="Турбо-режим"></button>
+        <button id="settingsBtn" class="hud-round hud-settings" type="button" aria-label="Настройки"></button>
+
+        <!-- Center: bet adjust + spin -->
+        <button id="minusBtn" class="hud-bet-side hud-minus" type="button" aria-label="Уменьшить ставку">−</button>
+        <button id="playBtn" class="hud-spin" type="button" aria-label="Начать игру"><i></i></button>
+        <button id="plusBtn" class="hud-bet-side hud-plus" type="button" aria-label="Увеличить ставку">+</button>
+
+        <!-- Right cluster: bonus, auto, sound -->
+        <button id="bonusBtn" class="hud-bonus" type="button" aria-label="Bonus buy"><b>BONUS</b><span>BUY</span></button>
+        <button id="autoBtn" class="hud-round hud-auto" type="button" aria-label="Автоматическая игра"></button>
+        <button id="soundBtn" class="hud-round hud-sound" type="button" aria-label="Звук"></button>
+
+        <!-- Readouts -->
+        <div class="hud-cash"><span>CASH <em>(DMO)</em></span><strong id="balanceValue">50,000.00</strong></div>
+        <div class="hud-win"><span>WIN</span><strong id="winValue">0.00</strong></div>
+        <div class="hud-bet"><span>BET</span><strong id="betValue">30.00</strong></div>
+      </section>
+      <div id="toast" class="toast hidden" aria-live="polite"></div>
+      <dialog id="settingsDialog">
+        <form method="dialog">
+          <button class="close" aria-label="Закрыть">×</button>
+          <h2>SETTINGS</h2>
+          <label><input id="particlesToggle" type="checkbox" checked /> PARTICLES</label>
+          <label><input id="shakeToggle" type="checkbox" checked /> CAMERA SHAKE</label>
+          <p class="theme-hint">WORLD / селектор — смена мира:<br/>Inferno · Void · Frost · Forest · Celestial · Abyss · Ocean<br/>BLOCKS — THEMED / CLASSIC</p>
+          <p>SPACE — SPIN · M — SOUND · T — TURBO</p>
+        </form>
+      </dialog>
+      <dialog id="bonusDialog" class="choice-dialog">
+        <form method="dialog">
+          <button class="close" aria-label="Закрыть">×</button>
+          <h2>BONUS BUY</h2>
+          <p>CHOOSE YOUR PICKAXE · COST ×10 BET</p>
+          <div class="choice-grid four">
+            <button type="button" data-tier="0">WOODEN<br /><small>100 HP</small></button>
+            <button type="button" data-tier="1">STONE<br /><small>150 HP</small></button>
+            <button type="button" data-tier="2">IRON<br /><small>200 HP</small></button>
+            <button type="button" data-tier="3">DIAMOND<br /><small>400 HP</small></button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="autoDialog" class="choice-dialog">
+        <form method="dialog">
+          <button class="close" aria-label="Закрыть">×</button>
+          <h2>AUTO PLAY</h2>
+          <p>CHOOSE NUMBER OF GAMES</p>
+          <div class="choice-grid">
+            <button type="button" data-auto="10">10</button>
+            <button type="button" data-auto="25">25</button>
+            <button type="button" data-auto="50">50</button>
+            <button type="button" data-auto="100">100</button>
+            <button type="button" data-auto="-1">∞</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+    <script src="./telegram.js"></script>
+    <script src="./game.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js").catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>

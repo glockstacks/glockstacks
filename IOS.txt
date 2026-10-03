@@ -1,0 +1,13 @@
+Falling Pickaxe — iOS browser version
+=====================================
+
+How to play on iPhone / iPad:
+1. Upload the falling-pickaxe-web folder to any HTTPS host (GitHub Pages, Netlify, etc.)
+2. Open the site in Safari
+3. Hold the phone vertically (portrait)
+4. Optional: Share → Add to Home Screen for fullscreen app mode
+
+Notes:
+- Portrait orientation (vertical phone layout)
+- First tap unlocks sound (Safari policy)
+- Works offline after first load (service worker)
